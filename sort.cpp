@@ -25,6 +25,17 @@ void shuffle(T* items, size_t size){
     return;
 }
 
+template <>
+void shuffle(int* items, size_t size){
+    for (int i = size - 1; i > 0; i--){
+        int j = rand() % i;
+        items[i] = items[i] ^ items[j];
+        items[j] = items[i] ^ items[j];
+        items[i] = items[i] ^ items[j];
+    }
+    return;
+}
+
 int main(int argc, const char *argv[])
 {
     const int size = 10;
