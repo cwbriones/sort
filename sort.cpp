@@ -9,6 +9,7 @@
  * Merge Sort
  * Quick Sort
  */
+
 template <class T>
 void swap(T& a, T& b){
     T tmp = a;
@@ -21,6 +22,46 @@ void swap(int& a, int& b){
     a = a ^ b;
     b = a ^ b;
     a = a ^ b;
+}
+
+template <class T>
+void merge(T* items, int left, int right, T* scratch){
+    if (right == left + 1){
+        return;
+    }
+    int i = 0;
+    int len = right - left;
+    int mid = len/2;
+
+    merge(items, left, left + mid, scratch);
+    merge(items, left + mid, right, scratch);
+
+    int il = left;
+    int ir = left + mid;
+
+    for (int i = 0; i < len; i++){
+        if (il < left + mid && (ir == right || items[il] < items[ir])){
+            scratch[i] = items[il];
+            il++;
+        } else {
+            scratch[i] = items[ir];
+            ir++;
+        }
+    }
+
+    // Copy back
+    for(i = left; i < right; i++){
+        items[i] = scratch[i - left];
+    }
+}
+
+template <class T>
+void merge_sort(T* items, size_t size){
+    T* scratch = new T[size];
+    merge(items, 0, size, scratch);
+    delete scratch;
+
+    return;
 }
 
 template <class T>
@@ -75,7 +116,7 @@ int main(int argc, const char *argv[])
         nums[i] = i + 1;
     }
     shuffle(nums, size);
-    cocktail_sort(nums, size);
+    merge_sort(nums, size);
     for (auto x : nums){
         std::cout << x << ' ';
     }
