@@ -10,7 +10,7 @@
  * Shell Sort
  * Radix Sort
  * Insertion Sort
- * Quick Sort
+ * ( and Library Sort )
  */
 
 /*
@@ -29,17 +29,24 @@ int randint(int a, int b){
 
 template <class T>
 void swap(T& a, T& b){
+    if (a == b){
+        return;
+    }
     T tmp = a;
     a = b;
     b = tmp;
 }
 
-// template <>
-// void swap(int& a, int& b){
-//     a = a ^ b;
-//     b = a ^ b;
-//     a = a ^ b;
-// }
+template <> // void swap(int& a, int& b){ //     a = a ^ b;
+void swap(int& a, int& b){
+    if (a == b){
+        // otherwise will turn both entries into 0s
+        return;
+    }
+    a ^= b;
+    b ^= a;
+    a ^= b;
+}
 
 template <class T>
 void shuffle(T* items, size_t size){
@@ -167,6 +174,16 @@ void cocktail_sort(T* items, size_t size){
     }
 }
 
+template <class T>
+bool is_sorted(T* items, size_t size){
+    for (int i = 0; i < size - 1; i++){
+        if (items[i] > items[i + 1]){
+            return false;
+        }
+    }
+    return true;
+}
+
 int main(int argc, const char *argv[])
 {
     const int size = 50;
@@ -175,7 +192,6 @@ int main(int argc, const char *argv[])
         nums[i] = i + 1;
     }
     shuffle(nums, size);
-    quick_sort(nums, size);
     for (auto x : nums){
         std::cout << x << ' ';
     }
