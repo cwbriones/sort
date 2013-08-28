@@ -1,17 +1,22 @@
 #include <iostream>
 #include <cstdlib>
+#include <cassert>
+#include <chrono>
+#include <ctime>
 // #include <utility>
 // #include <random>
 
 /*
  * TODO:
  * Selection Sort
- * Heap Sort
  * Shell Sort
  * Radix Sort
- * Insertion Sort
  * ( and Library Sort )
  */
+
+//==============================================================================
+// Utility Functions
+//==============================================================================
 
 /*
  * Function randint:
@@ -57,6 +62,29 @@ void shuffle(T* items, size_t size){
     return;
 }
 
+void TEST_print_check();
+
+template <class T>
+bool assert_sorted(T* items, size_t size){
+    TEST_print_check();
+    for (int i = 0; i < size - 1; i++){
+        assert(items[i] <= items[i+1]);
+    }
+    return true;
+}
+
+template <class Iterator>
+void print_iterable(Iterator start, Iterator end){
+    for (Iterator iter = start; iter != end; ++iter){
+        std::cout << *iter << " ";
+    }
+    std::cout << std::endl;
+}
+
+//==============================================================================
+// Quicksort
+//==============================================================================
+
 template <class T>
 size_t partition(T* items, size_t lo, size_t hi){
     int i = lo;
@@ -100,6 +128,10 @@ void quick_sort(T* items, size_t size){
     quick_sort(items, 0, size - 1);
 }
 
+//==============================================================================
+// Mergesort
+//==============================================================================
+
 template <class T>
 void merge(T* items, int left, int right, T* scratch){
     if (right == left + 1){
@@ -140,6 +172,11 @@ void merge_sort(T* items, size_t size){
     return;
 }
 
+//==============================================================================
+// Bubble-Sort and Similar
+//==============================================================================
+
+
 template <class T>
 void bubble_sort(T* items, size_t size){
     for (int i = size; i > 1; i--){
@@ -174,27 +211,133 @@ void cocktail_sort(T* items, size_t size){
     }
 }
 
+//==============================================================================
+// Various other sorts
+//==============================================================================
+
 template <class T>
-bool is_sorted(T* items, size_t size){
-    for (int i = 0; i < size - 1; i++){
-        if (items[i] > items[i + 1]){
-            return false;
+void insertion_sort(T* items, size_t size){
+    for (int i = 0; i < size; i++){
+        T tmp = items[i];
+
+        int j = i;
+        while (--j >= 0 && items[j] > tmp){
+            items[j + 1] = items[j];
         }
+        items[j + 1] = tmp;
     }
-    return true;
 }
 
-int main(int argc, const char *argv[])
-{
-    const int size = 50;
+//==============================================================================
+// Tests
+//==============================================================================
+
+using std::chrono::high_resolution_clock;
+
+void TEST_sort_sorted(const int size){
     int nums[size];
+
+    for (int i = 0; i < size; i++){
+        nums[i] = size + 1;
+    }
+    insertion_sort(nums, size);
+    assert_sorted(nums, size);
+
+    merge_sort(nums, size);
+    assert_sorted(nums, size);
+
+    quick_sort(nums, size);
+    assert_sorted(nums, size);
+
+    bubble_sort(nums, size);
+    assert_sorted(nums, size);
+
+    cocktail_sort(nums, size);
+    assert_sorted(nums, size);
+}
+
+void TEST_print_start(const char* sort, int size){
+    std::cout << "Beginning " << sort << "sort with " << size << " items." << std::endl;
+}
+
+void TEST_print_check(){
+    std::cout << "Verifying that items are sorted." << std::endl;
+}
+
+void TEST_print_log(const char* sort, int time, int size){
+    std::cout << sort << "sort: Sorted " << size << " items in " 
+              << time << " ms" << std::endl << std::endl;
+}
+
+int get_ms_duration(const high_resolution_clock::time_point& time){
+    return std::chrono::duration_cast<std::chrono::milliseconds>(
+            time.time_since_epoch()
+            ).count();
+}
+
+void TEST_sort_specified_size(const int size){
+    int nums[size];
+
     for (int i = 0; i < size; i++){
         nums[i] = i + 1;
     }
     shuffle(nums, size);
-    for (auto x : nums){
-        std::cout << x << ' ';
-    }
-    std::cout << std::endl;
-    return 0;
+
+    // TEST_print_start("Bubble", size);
+    high_resolution_clock::time_point start = high_resolution_clock::now();
+    // bubble_sort(nums, size);
+    high_resolution_clock::time_point end = high_resolution_clock::now();
+    // assert_sorted(nums, size);
+    int time = get_ms_duration(end) - get_ms_duration(start);
+    // TEST_print_log("Bubble", time, size);
+
+    // shuffle(nums, size);
+
+    // TEST_print_start("Cocktail", size);
+    // start = high_resolution_clock::now();
+    // cocktail_sort(nums, size);
+    // end = high_resolution_clock::now();
+    // assert_sorted(nums, size);
+    // time = get_ms_duration(end) - get_ms_duration(start);
+    // TEST_print_log("Cocktail", time, size);
+
+    shuffle(nums, size);
+
+    TEST_print_start("Insertion", size);
+    start = high_resolution_clock::now();
+    insertion_sort(nums, size);
+    end = high_resolution_clock::now();
+    assert_sorted(nums, size);
+    time = get_ms_duration(end) - get_ms_duration(start);
+    TEST_print_log("Insertion", time, size);
+
+    shuffle(nums, size);
+
+    TEST_print_start("Merge", size);
+    start = high_resolution_clock::now();
+    merge_sort(nums, size);
+    end = high_resolution_clock::now();
+    assert_sorted(nums, size);
+    time = get_ms_duration(end) - get_ms_duration(start);
+    TEST_print_log("Merge", time, size);
+
+    shuffle(nums, size);
+
+    TEST_print_start("Quick", size);
+    start = high_resolution_clock::now();
+    quick_sort(nums, size);
+    end = high_resolution_clock::now();
+    assert_sorted(nums, size);
+    time = get_ms_duration(end) - get_ms_duration(start);
+    TEST_print_log("Quick", time, size);
+}
+
+//==============================================================================
+// Main routine
+//==============================================================================
+
+
+int main(int argc, const char *argv[])
+{
+    TEST_sort_specified_size(1000000);
 }
