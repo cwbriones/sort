@@ -53,8 +53,7 @@ void swap(int& a, int& b){
     a ^= b;
 }
 
-template <class T>
-void shuffle(T* items, size_t size){
+void shuffle(int* items, size_t size){
     for (int i = size - 1; i > 0; i--){
         int j = rand() % i;
         swap(items[i], items[j]);
@@ -64,8 +63,7 @@ void shuffle(T* items, size_t size){
 
 void TEST_print_check();
 
-template <class T>
-bool assert_sorted(T* items, size_t size){
+bool assert_sorted(int* items, size_t size){
     TEST_print_check();
     for (int i = 0; i < size - 1; i++){
         assert(items[i] <= items[i+1]);
@@ -85,8 +83,7 @@ void print_iterable(Iterator start, Iterator end){
 // Quicksort
 //==============================================================================
 
-template <class T>
-size_t partition(T* items, size_t lo, size_t hi){
+size_t partition(int* items, size_t lo, size_t hi){
     int i = lo;
     int j = hi + 1;
 
@@ -110,8 +107,7 @@ size_t partition(T* items, size_t lo, size_t hi){
     return j;
 }
 
-template <class T>
-void quick_sort(T* items, int lo, int hi){
+void quick_sort(int* items, int lo, int hi){
     if (hi <= lo){
         // Arrays of length <= 1 are sorted
         return;
@@ -123,8 +119,7 @@ void quick_sort(T* items, int lo, int hi){
     quick_sort(items, j+1, hi);
 }
 
-template <class T>
-void quick_sort(T* items, size_t size){
+void quick_sort(int* items, size_t size){
     quick_sort(items, 0, size - 1);
 }
 
@@ -132,8 +127,7 @@ void quick_sort(T* items, size_t size){
 // Mergesort
 //==============================================================================
 
-template <class T>
-void merge(T* items, int left, int right, T* scratch){
+void merge(int* items, int left, int right, int* scratch){
     if (right == left + 1){
         return;
     }
@@ -163,9 +157,8 @@ void merge(T* items, int left, int right, T* scratch){
     }
 }
 
-template <class T>
-void merge_sort(T* items, size_t size){
-    T* scratch = new T[size];
+void merge_sort(int* items, size_t size){
+    int* scratch = new int[size];
     merge(items, 0, size, scratch);
     delete scratch;
 
@@ -177,8 +170,7 @@ void merge_sort(T* items, size_t size){
 //==============================================================================
 
 
-template <class T>
-void bubble_sort(T* items, size_t size){
+void bubble_sort(int* items, size_t size){
     for (int i = size; i > 1; i--){
         for (int j = 1; j < i; j++){
             if (items[j] < items[j-1]){
@@ -188,8 +180,7 @@ void bubble_sort(T* items, size_t size){
     }
 }
 
-template <class T>
-void cocktail_sort(T* items, size_t size){
+void cocktail_sort(int* items, size_t size){
     int left = 0;
     int right = size - 2;
 
@@ -215,10 +206,9 @@ void cocktail_sort(T* items, size_t size){
 // Various other sorts
 //==============================================================================
 
-template <class T>
-void insertion_sort(T* items, size_t size){
+void insertion_sort(int* items, size_t size){
     for (int i = 0; i < size; i++){
-        T tmp = items[i];
+        int tmp = items[i];
 
         int j = i;
         while (--j >= 0 && items[j] > tmp){
@@ -227,6 +217,7 @@ void insertion_sort(T* items, size_t size){
         items[j + 1] = tmp;
     }
 }
+
 
 //==============================================================================
 // Tests
