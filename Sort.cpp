@@ -55,8 +55,8 @@ size_t QuickSort::partition(int* items, size_t lo, size_t hi){
     while (true){
         // Increase first pointer until elem greater than pivot
         // and second pointer until elem less than pivot
-        while (items[++i] < items[lo] && i != hi);
-        while (items[lo] < items[--j] && j != lo);
+        while (compare(items[++i], items[lo]) < 0 && i != hi);
+        while (compare(items[lo], items[--j]) < 0 && j != lo);
         if (i >= j){
             break;
         }
@@ -105,7 +105,7 @@ void MergeSort::_merge(int* items, int left, int right, int* scratch){
     int ir = left + mid;
 
     for (int i = 0; i < len; i++){
-        if (il < left + mid && (ir == right || items[il] < items[ir])){
+        if (il < left + mid && (ir == right || (compare(items[il], items[ir]) < 0))){
             scratch[i] = items[il];
             il++;
         } else {
@@ -132,8 +132,6 @@ void MergeSort::operator()(int* items, size_t size){
 // Bubble-Sort and Similar
 //==============================================================================
 
-#include "SortingTester.h"
-
 BubbleSort::BubbleSort() : Sort("BubbleSort") {}
 
 void BubbleSort::operator()(int* items, size_t size){
@@ -155,14 +153,14 @@ void CocktailSort::operator()(int* items, size_t size){
     while (left < right){
         // Go up the list
         for (int i = left; i <= right; i++){
-            if (items[i] > items[i + 1]){
+            if (compare(items[i], items[i + 1]) > 0){
                 swap(items[i], items[i + 1]);
             }
         }
         left++;
         // Go down the list
         for (int i = right; i >= left; i--){
-            if (items[i-1] > items[i]){
+            if (compare(items[i-1], items[i]) > 0 ){
                 swap(items[i-1], items[i]);
             }
         }
@@ -181,9 +179,23 @@ void InsertionSort::operator()(int* items, size_t size){
         int tmp = items[i];
 
         int j = i;
-        while (--j >= 0 && items[j] > tmp){
+        while (--j >= 0 && compare(items[j], tmp) > 0){
             items[j + 1] = items[j];
+            if (tester_){
+                tester_->increment_swaps();
+            }
         }
         items[j + 1] = tmp;
+    }
+}
+
+HeapSort::HeapSort() : Sort("HeapSort") {}
+
+void HeapSort::operator()(int* items, size_t size){
+    MinHeap<int> heap(items, size);
+
+    int i = 0;
+    while (heap.size() > 0){
+        items[i++] = heap.pop_min();
     }
 }

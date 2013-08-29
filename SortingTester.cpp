@@ -19,6 +19,8 @@ unsigned int randint(int start, int end){
 // SortingTestResult and SortingTestSummary
 //==============================================================================
 
+#include <iomanip>
+
 SortingTestSummary::SortingTestSummary(std::string sort_name) :
     sort_name_(sort_name) {}
 
@@ -42,7 +44,8 @@ void SortingTestSummary::summarize(){
     std::map<int, double> average_times;
     std::map<int, double> average_swaps;
 
-    std::cout << "Sort: " << sort_name_ << std::endl;
+    std::cout << "--------------------------------------------------" << std::endl;
+    std::cout << "Performance Summary. Sort: " << sort_name_ << std::endl;
     std::cout << "--------------------------------------------------" << std::endl;
     for (auto& tests : results_){
         int test_size = tests.first;
@@ -68,10 +71,15 @@ void SortingTestSummary::summarize(){
         float avg_swaps = static_cast<float>(total.swaps)/num_tests;
 
         std::cout << "Statistics for sorting N = " << test_size << " items." << std::endl;
-        std::cout << "Total # of Tests: \t" << num_tests << std::endl;
-        std::cout << "Time (ms): \t" << avg_time_ms << std::endl;
-        std::cout << "Comparisons: \t" << avg_comparisons << std::endl;
-        std::cout << "Swaps: \t" << avg_swaps << std::endl;
+
+        std::cout << "Total # of Tests: " << 
+            std::setw(10) << std::right << num_tests << std::endl;
+        std::cout << "Average Time (ms): " << 
+            std::setw(10) << std::right << avg_time_ms << std::endl;
+        std::cout << "Average # of Comparisons: " <<
+            std::setw(10) << std::right << avg_comparisons << std::endl;
+        std::cout << "Average # of Swaps: " << 
+            std::setw(10) << std::right << avg_swaps << std::endl;
     }
 }
 
@@ -101,7 +109,7 @@ void SortingTester::add_sort(Sort* sort){
 }
 
 void SortingTester::test_all(int size, int num_tests, bool partial_sort){
-    std::cout << "Initializing contents." << std::endl;
+    std::cout << "Initializing contents.\n" << std::endl;
     initialize_contents(size);
 
     if (!data_){
@@ -138,8 +146,6 @@ void SortingTester::test_all(int size, int num_tests, bool partial_sort){
 
         summaries_.push_back(summary);
     }
-
-    show_results();
 }
 
 void SortingTester::initialize_contents(int size){
@@ -158,6 +164,7 @@ void SortingTester::clear_results(){
 }
 
 void SortingTester::show_results(){
+    std::cout << "\n\nTest Summaries" << std::endl;
     for (auto& summary : summaries_){
         summary.summarize();
     }

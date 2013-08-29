@@ -1,6 +1,7 @@
 #ifndef SORT_H_
 #define SORT_H_
 
+#include "Heap.h"
 #include <string>
 
 class SortingTester;
@@ -24,9 +25,8 @@ public:
 protected:
     void swap(int& a, int &b);
     int compare(int a, int b);
-private:
-    std::string name_;
     SortingTester* tester_ = nullptr;
+    std::string name_;
 };
 
 class QuickSort : public Sort {
@@ -61,6 +61,12 @@ public:
 class CocktailSort : public Sort {
 public:
     CocktailSort();
+    virtual void operator()(int* items, size_t size);
+};
+
+class HeapSort : public Sort {
+public:
+    HeapSort();
     virtual void operator()(int* items, size_t size);
 };
 

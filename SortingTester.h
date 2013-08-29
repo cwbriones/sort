@@ -7,6 +7,15 @@
 #include <map>
 #include <chrono>
 
+template <class Iterator>
+void print_iterable(Iterator start, Iterator end){
+    for (Iterator i = start; i != end; ++i){
+        std::cout << *i << ' ';
+    }
+    std::cout << std::endl;
+}
+
+
 unsigned int randint(int start, int end);
 
 struct SortingTestResult {
@@ -33,8 +42,8 @@ class SortingTester {
         void add_sort(Sort* sort);
         void test_all(int size, int num_tests, bool partial_sort = false);
 
-        void swap(int& a, int& b);
-        int compare(int a, int b);
+        void increment_swaps(){ ++swap_count; }
+        void increment_comparisons(){ ++comparisons; }
         void clear_results();
         void show_results();
     private:
@@ -43,7 +52,7 @@ class SortingTester {
         void shuffle_contents();
         void print_test_start();
         void print_check();
-        void check_sorted();
+        bool check_sorted();
         int get_ms_duration(const std::chrono::high_resolution_clock::time_point& time);
         void start_timer();
         int stop_timer();
