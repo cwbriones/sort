@@ -10,10 +10,9 @@ unsigned int randint(int start, int end){
     int MAX_VAL = RAND_MAX - N;
 
     int x;
+    // while ((x = rand()) < MAX_VAL);
 
-    while ((x = rand()) < MAX_VAL);
-
-    return x % N + start;
+    return rand() % N + start;
 }
 
 //==============================================================================
@@ -47,8 +46,6 @@ void SortingTestSummary::summarize(){
     std::cout << "--------------------------------------------------" << std::endl;
     for (auto& tests : results_){
         int test_size = tests.first;
-
-        std::cout << "Results for " << test_size << " tests." << std::endl;
 
         SortingTestResult total;
 
@@ -104,20 +101,36 @@ void SortingTester::add_sort(Sort* sort){
 }
 
 void SortingTester::test_all(int size, int num_tests, bool partial_sort){
+    std::cout << "Initializing contents." << std::endl;
     initialize_contents(size);
 
+    if (!data_){
+        std::cout << "ERROR: Data uninitialized." << std::endl;
+        std::cout << "Stopping tests." << std::endl;
+        return;
+    }
+
+    std::cout << "Beginning Tests." << std::endl;
     for (auto& sort : sorters_){
         // Test each sort
-        SortingTestSummary summary(sort->name());
-        print_test_start();
+        cur_sort = sort->name();
+
+        std::cout << "Testing " << cur_sort << std::endl;
+
+        SortingTestSummary summary(cur_sort);
 
         for (int i = 0; i < num_tests; i++){
             shuffle_contents();
-
             start_timer();
-            (*sort)(data_, test_size);
+            sort->operator()(data_, size);
             int time_ms = stop_timer();
-            check_sorted();
+
+            // print_check();
+            if (check_sorted()){
+                // std::cout << cur_sort << ": TEST SUCCESSFUL" << std::endl;
+            } else {
+                std::cout << "ERROR: TEST FAILED!" << std::endl;
+            }
 
             summary.add_result(size, time_ms, comparisons, swap_count);
             reset_test();
@@ -150,50 +163,32 @@ void SortingTester::show_results(){
     }
 }
 
-void SortingTester::swap(int& a, int& b){
-    a ^= b;
-    b ^= a;
-    a ^= b;
-
-    swap_count++;
-}
-int SortingTester::compare(int a, int b){
-    if (a < b){
-        return -1;
-    } 
-    else if (a == b) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
-    comparisons++;
-}
-
 // Private Methods
 //------------------------------------------------------------------------------
 
 void SortingTester::shuffle_contents(){
-    for (int i = test_size - 1; i > 0; i--){
-        int j = randint(0, i-1);
-        swap(data_[i], data_[j]);
+    for (int i = 0; i < test_size - 1; i++){
+        int j = randint(i, test_size - 1);
+
+        int tmp = data_[i];
+        data_[i] = data_[j];
+        data_[j] = tmp;
     }
     swap_count = 0;
 }
-void SortingTester::print_test_start(){
-    std::cout << cur_sort << ": starting sort of " 
-        << test_size << " integers." << std::endl;
-}
+
 void SortingTester::print_check(){
-    std::cout << cur_sort << ": Verifying that items are sorted.";
+    std::cout << cur_sort << ": Verifying that items are sorted." << std::endl;
 }
 
-void SortingTester::check_sorted(){
+bool SortingTester::check_sorted(){
     for (int i = 1; i < test_size; i++){
-        if (data_[i] < data_[i-1]){
+        if (data_[i] <= data_[i-1]){
             // There is an error here
+            return false;
         }
     }
+    return true;
 }
 int SortingTester::get_ms_duration(const std::chrono::high_resolution_clock::time_point& time){
     return 
@@ -206,8 +201,10 @@ void SortingTester::start_timer(){
 }
 
 int SortingTester::stop_timer(){
-    int elapsed = get_ms_duration(std::chrono::high_resolution_clock::now()) -
-        get_ms_duration(start);
+    std::chrono::high_resolution_clock::time_point now = 
+        std::chrono::high_resolution_clock::now();
+    int elapsed = get_ms_duration(now) - get_ms_duration(start);
+
     return elapsed;
 }
 void SortingTester::reset_test(){

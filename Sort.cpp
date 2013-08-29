@@ -15,7 +15,10 @@ std::string Sort::name() { return name_; }
 
 void Sort::swap(int& a, int& b){
     if (tester_){
-        tester_->swap(a, b);
+        tester_->increment_swaps();
+    }
+    if (a == b){
+        return;
     }
     a ^= b;
     b ^= a;
@@ -24,7 +27,7 @@ void Sort::swap(int& a, int& b){
 
 int Sort::compare(int a, int b){
     if (tester_){
-        return tester_->compare(a, b);
+        tester_->increment_comparisons();
     }
     if (a > b){
         return 1;
@@ -129,12 +132,14 @@ void MergeSort::operator()(int* items, size_t size){
 // Bubble-Sort and Similar
 //==============================================================================
 
+#include "SortingTester.h"
+
 BubbleSort::BubbleSort() : Sort("BubbleSort") {}
 
 void BubbleSort::operator()(int* items, size_t size){
     for (int i = size; i > 1; i--){
         for (int j = 1; j < i; j++){
-            if (items[j] < items[j-1]){
+            if (compare(items[j], items[j-1]) < 0){
                 swap(items[j], items[j-1]);
             }
         }
