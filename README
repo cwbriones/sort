@@ -1,0 +1,21 @@
+This project contains implementations of several standard sorting algorithms, along with a small test of each.
+
+Included:
+    Quicksort
+    Mergesort
+    Bubble sort
+    Cocktail sort
+    Insertion sort
+    Radix sort
+    Heap sort
+
+Future additions planned:
+    Selection sort
+    Shellsort
+    Combsort
+
+To build:
+g++ -o sorttest src/*.cpp -I include/ -std=c++11
+
+All of the code is released under the X11 Public License (MIT License).
+(C) 2013 Christian Briones
