@@ -14,6 +14,10 @@ Future additions planned:
     Shellsort
     Combsort
 
+Note that the statistics are not completely useful since standard deviation is not
+computed currently, and sorts such as mergesort do not actually swap items while
+radixsort does not compare items.
+
 To build:
 g++ -o sorttest src/*.cpp -I include/ -std=c++11
 

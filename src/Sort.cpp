@@ -114,18 +114,21 @@ MergeSort::MergeSort() : Sort("MergeSort") {}
 
 void MergeSort::_merge(int* items, int left, int right, int* scratch){
     if (right == left + 1){
+        // Base case
         return;
     }
     int i = 0;
     int len = right - left;
     int mid = len/2;
 
-    MergeSort::_merge(items, left, left + mid, scratch);
-    MergeSort::_merge(items, left + mid, right, scratch);
+    // Recurse
+    _merge(items, left, left + mid, scratch);
+    _merge(items, left + mid, right, scratch);
 
     int il = left;
     int ir = left + mid;
 
+    // Each half is now sorted. We merge.
     for (int i = 0; i < len; i++){
         if (il < left + mid && (ir == right || (compare(items[il], items[ir]) < 0))){
             scratch[i] = items[il];
@@ -143,6 +146,7 @@ void MergeSort::_merge(int* items, int left, int right, int* scratch){
 }
 
 void MergeSort::operator()(int* items, size_t size){
+    // Only a single array allocation is necessary
     int* scratch = new int[size];
     _merge(items, 0, size, scratch);
     delete scratch;
@@ -207,6 +211,8 @@ void InsertionSort::operator()(int* items, size_t size){
         int j = i;
         while (--j >= 0 && compare(items[j], tmp) > 0){
             items[j + 1] = items[j];
+            // Essentially we are swapping each element above
+            // the inserted position up one space
             if (tester_){
                 tester_->increment_swaps();
             }
@@ -222,10 +228,13 @@ void InsertionSort::operator()(int* items, size_t size){
 HeapSort::HeapSort() : Sort("HeapSort") {}
 
 void HeapSort::operator()(int* items, size_t size){
+
+    // Create the heap
     MinHeap<int> heap(items, size);
 
+    // Pop off the heap and populate the array
     int i = 0;
-    while (heap.size() > 0){
+    while (!heap.is_empty()){
         items[i++] = heap.pop_min();
     }
 }
@@ -240,21 +249,23 @@ void HeapSort::operator()(int* items, size_t size){
 RadixSort::RadixSort() : Sort("RadixSort") {}
 
 void RadixSort::operator()(int * items, size_t size){
+    if (size <= 1){
+        return;
+    }
     // Base of the modulo operation
     int m = 10;
-    // Bitshift
     int n = 1;
 
     std::vector< std::list<int> > buckets(10);
 
-    // find the largest item
+    // Find the largest item
     int max = items[0];
-
     for (int i = 1; i < size; i++){
         if (items[i] > max){
             max = items[i];
         }
     }
+
     while (n < max){
         // Move into respective list
         for (int i = 0; i < size; i++){
@@ -271,7 +282,7 @@ void RadixSort::operator()(int * items, size_t size){
                 items[k++] = top;
             }
         }
-        // iterate
+        // Iterate
         m *= 10;
         n *= 10;
     }

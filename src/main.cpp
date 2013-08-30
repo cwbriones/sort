@@ -41,11 +41,15 @@ int main(int argc, const char *argv[])
     tester.add_sort(new MergeSort());
     tester.add_sort(new QuickSort());
     tester.add_sort(new InsertionSort());
-    tester.add_sort(new HeapSort());
     tester.add_sort(new RadixSort());
+    tester.add_sort(new HeapSort());
+    
+    // Generate uniformly distributed integers in
+    // the interval [1, 1000] as our test data
     tester.set_data_range(1, 1000);
 
     // Let's do some tests
+    // Each algorithm will sort sets of 10 000 integers 10 times
     tester.test_all(10000, 10);
     tester.show_results();
 }

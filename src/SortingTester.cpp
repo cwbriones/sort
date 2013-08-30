@@ -28,13 +28,16 @@
 //==============================================================================
 
 unsigned int randint(int start, int end){
+    // Remove modulo bias by finding the maximum value
+    // and discarding those above it
+
     int N = end - start;
-    int MAX_VAL = RAND_MAX - N;
+    int MAX_VAL = RAND_MAX - ((RAND_MAX % N) + 1);
 
     int x;
-    // while ((x = rand()) < MAX_VAL);
+    while ((x = rand()) > MAX_VAL);
 
-    return rand() % N + start;
+    return x % N + start;
 }
 
 //==============================================================================
@@ -159,7 +162,6 @@ void SortingTester::test_all(int size, int num_tests, bool partial_sort){
             sort->operator()(data_, size);
             int time_ms = stop_timer();
 
-            // print_check();
             if (!check_sorted()){
                 std::cout << "ERROR: TEST FAILED!" << std::endl;
             }
@@ -208,6 +210,7 @@ void SortingTester::clear_results(){
 
 void SortingTester::show_results(){
     std::cout << "\n\nTest Summaries" << std::endl;
+
     for (auto& summary : summaries_){
         summary.summarize();
     }
@@ -240,12 +243,14 @@ bool SortingTester::check_sorted(){
     }
     return true;
 }
+
 int SortingTester::get_ms_duration(const std::chrono::high_resolution_clock::time_point& time){
     return 
         std::chrono::duration_cast<std::chrono::milliseconds>(
                 time.time_since_epoch()
             ).count();
 }
+
 void SortingTester::start_timer(){
     start = std::chrono::high_resolution_clock::now();
 }
